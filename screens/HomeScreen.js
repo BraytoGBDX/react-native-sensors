@@ -12,6 +12,16 @@ export default function HomeScreen() {
         fan: false,
     });
 
+    const ventilador = async () => {
+        try {
+            const response = await fetch('http://192.168.1.100/ventilador');
+            Alert.alert('Ventilador activado');
+        } catch (error) {
+            console.error('Error:', error);
+            Alert.alert('Error al activar el motor');
+        }
+    };
+
     const handleBinnacle = () => {
         navigation.navigate('DataScreen');
     };
@@ -71,7 +81,7 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.fan ? styles.buttonPressed : null]}
-                        onPress={() => handleButtonPress('fan')}
+                        onPress={() => {handleButtonPress('fan'); activarMotor()}}
                     >
                         <Icon.MaterialCommunityIcons name="fan" size={80} color="white" />
                     </TouchableOpacity>
