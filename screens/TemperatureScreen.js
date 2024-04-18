@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import * as Icon from 'react-native-vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,14 +9,24 @@ export default function TemperatureScreen() {
     const [humidity, setHumidity] = useState(0);
     const [heat, setHeat] = useState(0);
 
+    useEffect(() => {
+        const webSocket = new WebSocket('ws://192.168.137.113:81');
 
+        webSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const temperatureData = data.temperature;
+            const humidityData = data.humidity;
+            const heatData = data.heatIndex;
 
+            setTemperature(parseFloat(temperatureData));
+            setHumidity(parseFloat(humidityData));
+            setHeat(parseFloat(heatData));
+        };
 
-    // Función para simular un cambio en la temperatura (puedes reemplazar esto con tus datos en tiempo real)
-    const updateTemperature = () => {
-        const newTemperature = Math.floor(Math.random() * 51); // Genera un número aleatorio entre 0 y 50 (temperatura máxima)
-        setTemperature(newTemperature);
-    };
+        return () => {
+            webSocket.close();
+        };
+    }, []);
 
     const handleLogout = () => {
         navigation.navigate('App');
@@ -26,59 +36,70 @@ export default function TemperatureScreen() {
         navigation.navigate('HomeScreen');
     };
 
-    const handleBinnacle =()=>{
-        navigation.navigate('DataScreen')
-    }
+    const handleBinnacle = () => {
+        navigation.navigate('DataScreen');
+    };
 
-    const handleAccount = () =>{
-        navigation.navigate('AccountScreen')
-    }
+    const handleAccount = () => {
+        navigation.navigate('AccountScreen');
+    };
+
     return (
-            <View style={styles.container}>
-                <View style={styles.topSection}>
-                    <TouchableOpacity style={styles.iconButton} onPress={handleBinnacle}>
+        <View style={styles.container}>
+            <View style={styles.topSection}>
+                <TouchableOpacity style={styles.iconButton} onPress={handleBinnacle}>
                     <Icon.FontAwesome5 name="clipboard-list" size={40} color="#486EEB" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>DEGREES</Text>
-                    <TouchableOpacity style={styles.iconButton} onPress={handleAccount}>
-                        <Icon.Ionicons name="settings-sharp" size={40} color="#486EEB" />
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
+                <Text style={styles.title}>DEGREES</Text>
+                <TouchableOpacity style={styles.iconButton} onPress={handleAccount}>
+                    <Icon.Ionicons name="settings-sharp" size={40} color="#486EEB" />
+                </TouchableOpacity>
+            </View>
 
-                <View style={styles.temperatureContainer}>
+            <View style={styles.temperatureContainer}>
+                {temperature === 0 ? (
+                    <Text style={styles.calculatingText}>Calibrating...</Text>
+                ) : (
                     <Text style={styles.temperature}>{temperature.toFixed(1)}°</Text>
-                    <View style={styles.barContainer}>
-                        {[...Array(50)].map((_, index) => (
-                            <View key={index} style={[styles.bar, { backgroundColor: index < temperature ? '#F2636F' : '#DDD' }]} />
-                        ))}
-                    </View>
-
-                    <View style={styles.bottomSection2}>
-                        <View style={styles.iconContainer}>
-                            <Icon.MaterialCommunityIcons name="air-humidifier" size={50} color="#486EEB" />
-                            <Text style={styles.iconText}>Humidity</Text>
-                            <Text style={styles.humidity}>{humidity.toFixed(1)}%</Text>
-                        </View>
-                        <View style={styles.iconContainer}>
-                            <Icon.MaterialIcons name="whatshot" size={50} color="#486EEB" />
-                            <Text style={styles.iconText}>Thermal sensation</Text>
-                            <Text style={styles.humidity}>{heat.toFixed(1)}°</Text>
-                        </View>
-                    </View>
+                )}
+                <View style={styles.barContainer}>
+                    {[...Array(50)].map((_, index) => (
+                        <View key={index} style={[styles.bar, { backgroundColor: index < temperature ? '#F2636F' : '#DDD' }]} />
+                    ))}
                 </View>
 
-                <View style={styles.bottomSection}>
-                    <TouchableOpacity style={styles.bottomIcon} onPress={handleHome}>
-                        <Icon.Entypo name="home" size={50} color="#486EEB" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.bottomIcon}>
-                        <Icon.FontAwesome6 name="temperature-half" size={50} color="#486EEB" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.bottomIcon} onPress={handleLogout}>
-                        <Icon.MaterialCommunityIcons name="logout" size={50} color="#486EEB" />
-                    </TouchableOpacity>
+                <View style={styles.bottomSection2}>
+                    <View style={styles.iconContainer}>
+                        <Icon.MaterialCommunityIcons name="air-humidifier" size={70} color="#486EEB" />
+                        <Text style={styles.iconText}>Humidity</Text>
+                        <Text style={styles.humidity} >{humidity.toFixed(1)}%</Text>
+                    </View>
+                    <View style={styles.iconContainer}>
+                        <Icon.MaterialIcons name="whatshot" size={70} color="#486EEB" />
+                        <Text style={styles.iconText}>Thermal sensation</Text>
+                        <Text style={styles.humidity}>{heat.toFixed(1)}°</Text>
+                        
+                    </View>
+                </View>
+                <View>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonText}>Save Binnacle</Text>
+                </TouchableOpacity>
                 </View>
             </View>
+
+            <View style={styles.bottomSection}>
+                <TouchableOpacity style={styles.bottomIcon} onPress={handleHome}>
+                    <Icon.Entypo name="home" size={50} color="#486EEB" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.bottomIcon}>
+                    <Icon.FontAwesome6 name="temperature-half" size={50} color="#486EEB" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.bottomIcon} onPress={handleLogout}>
+                    <Icon.MaterialCommunityIcons name="logout" size={50} color="#486EEB" />
+                </TouchableOpacity>
+            </View>
+        </View>
     );
 }
 
@@ -171,5 +192,23 @@ const styles = StyleSheet.create({
     iconContainer: {
         alignItems: 'center',
         padding:'10%'
+    },
+    button: {
+        marginTop: 10,
+        backgroundColor: '#F2636F',
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize:30
+    },
+    calculatingText: {
+        fontSize: 54,
+        fontWeight: 'bold',
+        color: '#486EEB',
+        marginBottom: 20,
     },
 });
