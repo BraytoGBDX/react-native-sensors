@@ -10,6 +10,7 @@ export default function HomeScreen() {
         window: false,
         windowClosed: false,
         fan: false,
+        light:false
     });
 
     const ventilador = async () => {
@@ -84,6 +85,16 @@ export default function HomeScreen() {
                         onPress={() => {handleButtonPress('fan'); activarMotor()}}
                     >
                         <Icon.MaterialCommunityIcons name="fan" size={80} color="white" />
+                    </TouchableOpacity>
+                    
+                </View>
+
+                <View style={styles.gridRow}>
+                <TouchableOpacity
+                        style={[styles.gridItem, buttonPressed.light ? styles.buttonPressed : null]}
+                        onPress={() => handleButtonPress('light')}
+                    >
+                        <Icon.MaterialCommunityIcons name="lightbulb-on-outline" size={80} color="white" />
                     </TouchableOpacity>
                 </View>
             </View>
