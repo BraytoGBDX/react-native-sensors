@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,Alert } from 'react-native';
 import * as Icon from 'react-native-vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -14,13 +14,23 @@ export default function HomeScreen() {
     });
 
     const ventilador = async () => {
-        try {
-            const response = await fetch('http://192.168.1.100/ventilador');
-            Alert.alert('Ventilador activado');
-        } catch (error) {
-            console.error('Error:', error);
-            Alert.alert('Error al activar el motor');
-        }
+            const response = await fetch('http://192.168.137.113/ventilador');
+    };
+
+    const puerta = async () => {
+            const response = await fetch('http://192.168.137.113/puerta');
+    };
+
+    const ventana1 = async () => {
+            const response = await fetch('http://192.168.137.113/ventana1');
+    };
+
+    const ventana2 = async () => {
+            const response = await fetch('http://192.168.137.113/ventana2');
+    };
+
+    const luz = async () => {
+            const response = await fetch('http://192.168.137.113/luz');
     };
 
     const handleBinnacle = () => {
@@ -62,13 +72,13 @@ export default function HomeScreen() {
                 <View style={styles.gridRow}>
                     <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.door ? styles.buttonPressed : null]}
-                        onPress={() => handleButtonPress('door')}
+                        onPress={() => {handleButtonPress('door');puerta()}}
                     >
                         <Icon.MaterialCommunityIcons name="door" size={85} color="white" />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.window ? styles.buttonPressed : null]}
-                        onPress={() => handleButtonPress('window')}
+                        onPress={() => {handleButtonPress('window');ventana1()}}
                     >
                         <Icon.MaterialIcons name="window" size={80} color="white" />
                     </TouchableOpacity>
@@ -76,13 +86,13 @@ export default function HomeScreen() {
                 <View style={styles.gridRow}>
                     <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.windowClosed ? styles.buttonPressed : null]}
-                        onPress={() => handleButtonPress('windowClosed')}
+                        onPress={() => {handleButtonPress('windowClosed'),ventana2()}}
                     >
                         <Icon.MaterialCommunityIcons name="window-closed-variant" size={80} color="white" />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.fan ? styles.buttonPressed : null]}
-                        onPress={() => {handleButtonPress('fan'); activarMotor()}}
+                        onPress={() => {handleButtonPress('fan'); ventilador()}}
                     >
                         <Icon.MaterialCommunityIcons name="fan" size={80} color="white" />
                     </TouchableOpacity>
@@ -92,7 +102,7 @@ export default function HomeScreen() {
                 <View style={styles.gridRow}>
                 <TouchableOpacity
                         style={[styles.gridItem, buttonPressed.light ? styles.buttonPressed : null]}
-                        onPress={() => handleButtonPress('light')}
+                        onPress={() => {handleButtonPress('light');luz()}}
                     >
                         <Icon.MaterialCommunityIcons name="lightbulb-on-outline" size={80} color="white" />
                     </TouchableOpacity>
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '40%',
-        backgroundColor: '#486EEB',
+        backgroundColor: '#F2636F',
         padding: 30,
         margin: 20,
         marginTop: 30,

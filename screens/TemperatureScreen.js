@@ -5,9 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function TemperatureScreen() {
     const navigation = useNavigation();
-    const [temperature, setTemperature] = useState(30.5); 
-    const [humidity, Humidity] = useState(30);
-    const [heat, Heat] = useState(43);
+    const [temperature, setTemperature] = useState(0); 
+    const [humidity, setHumidity] = useState(0);
+    const [heat, setHeat] = useState(0);
+
 
 
 
@@ -45,7 +46,7 @@ export default function TemperatureScreen() {
                 </View>
 
                 <View style={styles.temperatureContainer}>
-                    <Text style={styles.temperature}>{temperature}°</Text>
+                    <Text style={styles.temperature}>{temperature.toFixed(1)}°</Text>
                     <View style={styles.barContainer}>
                         {[...Array(50)].map((_, index) => (
                             <View key={index} style={[styles.bar, { backgroundColor: index < temperature ? '#F2636F' : '#DDD' }]} />
@@ -56,12 +57,12 @@ export default function TemperatureScreen() {
                         <View style={styles.iconContainer}>
                             <Icon.MaterialCommunityIcons name="air-humidifier" size={50} color="#486EEB" />
                             <Text style={styles.iconText}>Humidity</Text>
-                            <Text style={styles.humidity}>{humidity}%</Text>
+                            <Text style={styles.humidity}>{humidity.toFixed(1)}%</Text>
                         </View>
                         <View style={styles.iconContainer}>
                             <Icon.MaterialIcons name="whatshot" size={50} color="#486EEB" />
                             <Text style={styles.iconText}>Thermal sensation</Text>
-                            <Text style={styles.humidity}>{heat}°</Text>
+                            <Text style={styles.humidity}>{heat.toFixed(1)}°</Text>
                         </View>
                     </View>
                 </View>
