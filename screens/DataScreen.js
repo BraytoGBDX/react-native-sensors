@@ -1,23 +1,35 @@
-import React from 'react';
-import { StyleSheet, View, Text, FlatList,TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import * as Icon from 'react-native-vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
+import { getAllSensors, deleteData } from '../Api'; 
 
 const DataScreen = () => {
     const navigation = useNavigation();
-    const temperatureData = [
-        { id: '1', temperature: 23.5, humidity: 60 },
-        { id: '2', temperature: 24.0, humidity: 55 },
-        { id: '3', temperature: 22.8, humidity: 58 },
-        { id: '4', temperature: 25.2, humidity: 50 },
-        { id: '5', temperature: 26.5, humidity: 45 },
-    ];
+    const [temperatureData, setTemperatureData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const sensors = await getAllSensors();
+            setTemperatureData(sensors); 
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching sensor data:', error);
+            setLoading(false);
+        }
+    };
 
     const renderItem = ({ item }) => (
         <View style={styles.item}>
-            <Text style={styles.itemText}>Temperature: {item.temperature}°C</Text>
-            <Text style={styles.itemText}>Humidity: {item.humidity}%</Text>
+            <Text style={styles.itemText}>Temperature: {item.temperatura}°C</Text>
+            <Text style={styles.itemText}>Humidity: {item.humedad}%</Text>
+            <Text style={styles.itemText}>Heat Index: {item.sensacionTermica}°</Text>
+            <Text style={styles.itemText}>Date: {item.fechaRegistro}°</Text>
         </View>
     );
 
@@ -30,18 +42,33 @@ const DataScreen = () => {
     };
 
     const handleTemperature = () => {
-        navigation.navigate('Temperature')
-    }
+        navigation.navigate('Temperature');
+    };
 
-    const handleAccount = () =>{
-        navigation.navigate('AccountScreen')
-    }
+    const handleAccount = () => {
+        navigation.navigate('AccountScreen');
+    };
+
+    const handleDeleteAll = async () => {
+        try {
+            await deleteData();
+            setTemperatureData([]); 
+        } catch (error) {
+            console.error('Error deleting data:', error);
+        }
+    };
+
+    const handleRefresh = () => {
+        setLoading(true);
+        fetchData(); 
+    };
+
     return (
         <View style={styles.container}>
-            {/* Iconos de arriba */}
+            {/* Iconos en la parte superior */}
             <View style={styles.topSection}>
                 <TouchableOpacity style={styles.iconButton}>
-                <Icon.FontAwesome5 name="clipboard-list" size={40} color="#486EEB" />
+                    <Icon.FontAwesome5 name="clipboard-list" size={40} color="#486EEB" />
                 </TouchableOpacity>
                 <Text style={styles.title}>DATA</Text>
                 <TouchableOpacity style={styles.iconButton} onPress={handleAccount}>
@@ -49,13 +76,19 @@ const DataScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={temperatureData}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-                style={styles.list}
-            />
+            {/* Indicador de carga */}
+            {loading ? (
+                <ActivityIndicator size="large" color="#486EEB" style={{ marginTop: 20 }} />
+            ) : (
+                <FlatList
+                    data={temperatureData}
+                    renderItem={renderItem}
+                    keyExtractor={item => item._id}
+                    style={styles.list}
+                />
+            )}
 
+            {/* Botones en la parte inferior */}
             <View style={styles.bottomSection}>
                 <TouchableOpacity style={styles.bottomIcon} onPress={handleHome}>
                     <Icon.Entypo name="home" size={50} color="#486EEB" />
@@ -66,6 +99,9 @@ const DataScreen = () => {
                 <TouchableOpacity style={styles.bottomIcon} onPress={handleLogout}>
                     <Icon.MaterialCommunityIcons name="logout" size={50} color="#486EEB" />
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.bottomIcon} onPress={handleDeleteAll}>
+                    <Icon.MaterialCommunityIcons name="delete" size={50} color="#486EEB" />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -75,15 +111,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        paddingTop: 10, 
+        paddingTop: 10,
     },
     topSection: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         marginBottom: 20,
-        marginTop:20,
-
+        marginTop: 20,
     },
     title: {
         fontSize: 40,
@@ -91,7 +126,8 @@ const styles = StyleSheet.create({
         color: '#486EEB'
     },
     iconButton: {
-        padding: 50,
+        padding: 10,
+        alignItems: 'center',
     },
     list: {
         flex: 1,
@@ -113,8 +149,13 @@ const styles = StyleSheet.create({
         marginTop: 'auto',
     },
     bottomIcon: {
-        padding: 40,
+        alignItems: 'center',
+        padding: 20,
         paddingBottom: 20,
+    },
+    iconText: {
+        fontSize: 16,
+        color: '#486EEB',
     },
 });
 

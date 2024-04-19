@@ -14,23 +14,23 @@ export default function HomeScreen() {
     });
 
     const ventilador = async () => {
-            const response = await fetch('http://192.168.137.113/ventilador');
+            const response = await fetch('http://192.168.137.248/ventilador');
     };
 
     const puerta = async () => {
-            const response = await fetch('http://192.168.137.113/puerta');
+            const response = await fetch('http://192.168.137.248/puerta');
     };
 
     const ventana1 = async () => {
-            const response = await fetch('http://192.168.137.113/ventana1');
+            const response = await fetch('http://192.168.137.248/ventana1');
     };
 
     const ventana2 = async () => {
-            const response = await fetch('http://192.168.137.113/ventana2');
+            const response = await fetch('http://192.168.137.248/ventana2');
     };
 
     const luz = async () => {
-            const response = await fetch('http://192.168.137.113/luz');
+            const response = await fetch('http://192.168.137.248/luz');
     };
 
     const handleBinnacle = () => {
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F2636F',
         padding: 30,
         margin: 20,
-        marginTop: 30,
+        marginTop: 0,
         borderRadius: 10,
     },
     bottomSection: {

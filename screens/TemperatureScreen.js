@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
 import * as Icon from 'react-native-vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { insertData } from '../Api.js';
 
 export default function TemperatureScreen() {
     const navigation = useNavigation();
     const [temperature, setTemperature] = useState(0); 
     const [humidity, setHumidity] = useState(0);
-    const [heat, setHeat] = useState(0);
+    const [heat, setHeat] = useState(0)
+    
 
     useEffect(() => {
-        const webSocket = new WebSocket('ws://192.168.137.113:81');
+        const webSocket = new WebSocket('ws://192.168.137.248:81');
 
         webSocket.onmessage = (event) => {
+            
             const data = JSON.parse(event.data);
             const temperatureData = data.temperature;
             const humidityData = data.humidity;
@@ -43,6 +46,18 @@ export default function TemperatureScreen() {
     const handleAccount = () => {
         navigation.navigate('AccountScreen');
     };
+
+    const insertSensor = async () => {
+        
+        Alert.alert('Info','Datos guardados');
+        const sensor = {
+            "temperatura" : temperature,
+            "humedad": humidity,
+            "sensacionTermica": heat
+        }
+        await insertData(sensor)
+
+    }
 
     return (
         <View style={styles.container}>
@@ -82,7 +97,7 @@ export default function TemperatureScreen() {
                     </View>
                 </View>
                 <View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={insertSensor}>
                     <Text style={styles.buttonText}>Save Binnacle</Text>
                 </TouchableOpacity>
                 </View>
@@ -133,7 +148,7 @@ const styles = StyleSheet.create({
     },
     temperatureContainer: {
         alignItems: 'center',
-        marginTop:'20%',
+        marginTop:'5%',
         marginBottom: 20,
     },
     temperature: {
